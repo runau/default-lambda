@@ -1,0 +1,45 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: lambda
+Parameters:
+  Env:
+    Type: String
+    Default: dev
+  Project:
+    Type: String
+    Default: default-project
+  RoleName:
+    Type: String
+    Default: default-Role
+Resources:
+  Lambda:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName:
+        Fn::Sub: lambda_name-${Env}
+      Handler: lambda_function.lambda_handler
+      Runtime: python3.7
+      CodeUri: s3://backet-for-cloudformation-dev/f3e4b3eca84bbb41127a0e4ab8c1196f
+      Description:
+        Fn::Sub: lambda_name-${Env}
+      Environment:
+        Variables:
+          ENV:
+            Fn::Sub: ${Env}
+      MemorySize: 1024
+      Timeout: 600
+      Tags:
+        Env:
+          Fn::Sub: ${Env}
+        project:
+          Fn::Sub: ${Project}
+      Layers:
+      - Ref: CommonLayer
+  CommonLayer:
+    Type: AWS::Serverless::LayerVersion
+    Properties:
+      Description: python modules Layer
+      ContentUri: s3://backet-for-cloudformation-dev/7a7c6f34d473e761af2daaad31952a7b
+      CompatibleRuntimes:
+      - python3.7
+      - python3.6
